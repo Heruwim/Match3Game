@@ -20,13 +20,13 @@ public class BoardService : MonoBehaviour
                 Point point = new Point(x, y);
                 cell.Rect.anchoredPosition = GetBoardPositionFromPoint(point);
                 var cellType = GetRandomCellType();
-                cell.Initialize(cellType, point, _cellSprites[(int)(cellType - 1)]);
+                cell.Initialize(new CellData(cellType, point), _cellSprites[(int)(cellType - 1)]);
 
             }
         }
     }
 
-    private Cell.CellType GetRandomCellType() => (Cell.CellType)(Random.Range(0, _cellSprites.Length) + 1);
+    private CellData.CellType GetRandomCellType() => (CellData.CellType)(Random.Range(0, _cellSprites.Length) + 1);
 
     private Cell InstantiateCell() => Instantiate(_cellPrefab, _BoardRect);
 
