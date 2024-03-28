@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public class MatchMachine
@@ -21,6 +22,7 @@ public class MatchMachine
 
         CheckForDirectionMatch(ref connectedPoints, point, cellTypeAtPoint);
         CheckForMiddDirectionMatch(ref connectedPoints, point, cellTypeAtPoint);
+        CheckForSquareDirectionMatch(ref connectedPoints, point, cellTypeAtPoint);
 
         if (main)
         {
@@ -33,11 +35,42 @@ public class MatchMachine
         return connectedPoints;
     }
 
+    private void CheckForSquareDirectionMatch(ref List<Point> connectedPoints, Point point, CellData.CellType cellTypeAtPoint)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            List<Point> square = new List<Point>();
+
+            int nextCellIndex = i + 1;
+            nextCellIndex = nextCellIndex > 3 ? 0 : nextCellIndex;
+
+            Point[] checkPoints =
+            {
+                Point.Add(point, _directions[i]),
+                Point.Add(point, _directions[nextCellIndex]),
+                Point.Add(point, Point.Add(_directions[i], _directions[nextCellIndex])),
+            };
+
+            foreach (Point checkPoint in checkPoints)
+            {
+                if(_boardService.GetCellTypeAtPoint(checkPoint) == cellTypeAtPoint)
+                {
+                    square.Add(checkPoint); 
+                }
+            }
+
+            if(square.Count > 2)
+            {
+                AddPoints(ref connectedPoints, square);
+            }
+        }
+    }
+
     private void CheckForMiddDirectionMatch(ref List<Point> connectedPoints, Point point, CellData.CellType cellTypeAtPoint)
     {
         for (int i = 0; i < 2; i++)
         {
-            var line = new List<Point>();
+            List<Point> line = new List<Point>();
 
             Point[] checkPoints =
             {
@@ -45,7 +78,7 @@ public class MatchMachine
                 Point.Add(point, _directions[i + 2]),
             };
 
-            foreach (var checkPoint in checkPoints)
+            foreach (Point checkPoint in checkPoints)
             {
                 if(_boardService.GetCellTypeAtPoint(checkPoint) == cellTypeAtPoint)
                 {
@@ -62,13 +95,13 @@ public class MatchMachine
 
     private void CheckForDirectionMatch(ref List<Point> connectedPoints, Point point, CellData.CellType cellTypeAtPoint)
     {
-        foreach (var direction in _directions)
+        foreach (Point direction in _directions)
         {
-            var line = new List<Point>();
+            List<Point> line = new List<Point>();
 
             for (int i = 1; i < 3; i++)
             {
-                var checkPoint = Point.Add(point, Point.Multiply(direction, i));
+                Point checkPoint = Point.Add(point, Point.Multiply(direction, i));
                 if (_boardService.GetCellTypeAtPoint(checkPoint) == cellTypeAtPoint)
                 {
                     line.Add(checkPoint);
@@ -84,10 +117,10 @@ public class MatchMachine
 
     private static void AddPoints(ref List<Point> points, List<Point> addPoints)
     {
-        foreach (var addPoint in addPoints)
+        foreach (Point addPoint in addPoints)
         {
             bool doAdd = true;
-            foreach (var point in points)
+            foreach (Point point in points)
             {
                 if (point.Equals(addPoint))
                 {
