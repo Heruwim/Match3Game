@@ -20,6 +20,7 @@ public class MatchMachine
         var cellTypeAtPoint = _boardService.GetCellTypeAtPoint(point);
 
         CheckForDirectionMatch(ref connectedPoints, point, cellTypeAtPoint);
+        CheckForMiddDirectionMatch(ref connectedPoints, point, cellTypeAtPoint);
 
         if (main)
         {
@@ -30,6 +31,33 @@ public class MatchMachine
         }
 
         return connectedPoints;
+    }
+
+    private void CheckForMiddDirectionMatch(ref List<Point> connectedPoints, Point point, CellData.CellType cellTypeAtPoint)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            var line = new List<Point>();
+
+            Point[] checkPoints =
+            {
+                Point.Add(point, _directions[i]),
+                Point.Add(point, _directions[i + 2]),
+            };
+
+            foreach (var checkPoint in checkPoints)
+            {
+                if(_boardService.GetCellTypeAtPoint(checkPoint) == cellTypeAtPoint)
+                {
+                    line.Add(checkPoint);
+                }
+            }
+
+            if(line.Count > 1)
+            {
+                AddPoints(ref connectedPoints, line);
+            }
+        }
     }
 
     private void CheckForDirectionMatch(ref List<Point> connectedPoints, Point point, CellData.CellType cellTypeAtPoint)
