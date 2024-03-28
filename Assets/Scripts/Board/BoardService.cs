@@ -10,18 +10,48 @@ public class BoardService : MonoBehaviour
     [SerializeField] private Cell _cellPrefab;
     [SerializeField] private Sprite[] _cellSprites;
 
+    private CellData[,] _boards;
+
+    public ArrayLayout BoartLayout;
+
     private void Start()
     {
-        for (int x = 0; x < Config.BoardWidth; x++)
-        {
-            for(int y = 0; y < Config.BoardHeight; y++)
-            {
-                Cell cell = InstantiateCell();
-                Point point = new Point(x, y);
-                cell.Rect.anchoredPosition = GetBoardPositionFromPoint(point);
-                var cellType = GetRandomCellType();
-                cell.Initialize(new CellData(cellType, point), _cellSprites[(int)(cellType - 1)]);
+        InitializeBoard();
+        InstantiateBoard();
+    }
 
+    private void InstantiateBoard()
+    {
+        for (int y = 0; y < Config.BoardHeight; y++)
+        {
+            for (int x = 0; x < Config.BoardWidth; x++)
+            {
+                Point point = new Point(x, y);
+                CellData cellData = GetCellAtPoint(point);
+                var cellType = cellData.NewCellType;
+                if(cellType <= 0)
+                {
+                    continue;
+                }
+
+                Cell cell = InstantiateCell();
+                cell.Rect.anchoredPosition = GetBoardPositionFromPoint(point);
+                cell.Initialize(cellData, _cellSprites[(int)(cellType - 1)]);
+
+            }
+        }
+    }
+
+    private CellData GetCellAtPoint(Point point) => _boards[point.X, point.Y];
+
+    private void InitializeBoard()
+    {
+        _boards = new CellData[Config.BoardWidth, Config.BoardHeight];
+        for (int y = 0; y < Config.BoardHeight; y++)
+        {
+            for (int x = 0; x < Config.BoardWidth; x++)
+            {
+                _boards[x, y] = new CellData(BoartLayout.RowDatas[y].Rows[x] ? CellData.CellType.Hole : GetRandomCellType(), new Point(x, y));
             }
         }
     }
