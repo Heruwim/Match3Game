@@ -7,5 +7,3 @@ namespace StaticData
         public const int PieceSize = 100;
     }
 }
-
-

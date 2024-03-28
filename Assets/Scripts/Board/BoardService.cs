@@ -35,7 +35,7 @@ public class BoardService : MonoBehaviour
         {
             for (int x = 0; x < Config.BoardWidth; x++)
             {
-                Point point = new Point(x, y);
+                var point = new Point(x, y);
                 var cellTypeAtPoint = GetCellTypeAtPoint(point);
                 if(cellTypeAtPoint <= 0)
                 {
@@ -49,8 +49,7 @@ public class BoardService : MonoBehaviour
                     {
                         removeCellTypes.Add(cellTypeAtPoint);
                     }
-                    SetCellTypeAtPoint(point, GetNewCellType(ref removeCellTypes));
-                    
+                    SetCellTypeAtPoint(point, GetNewCellType(ref removeCellTypes));                    
                 } 
             }
         }
@@ -77,7 +76,14 @@ public class BoardService : MonoBehaviour
             availableCellTypes[Random.Range(0, availableCellTypes.Count)];
     }
 
-    private CellData.CellType GetCellTypeAtPoint(Point point) => _boards[point.X, point.Y].NewCellType;
+    public CellData.CellType GetCellTypeAtPoint(Point point)
+    {
+        if(point.X < 0 || point.X >= Config.BoardWidth || point.Y < 0 || point.Y >= Config.BoardHeight)
+        {
+            return CellData.CellType.Hole;
+        }
+        return _boards[point.X, point.Y].NewCellType;
+    }
 
     private void InitializeBoard()
     {
