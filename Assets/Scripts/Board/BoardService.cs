@@ -11,6 +11,8 @@ public class BoardService : MonoBehaviour
     private CellData[,] _boards;
     private CellFactory _cellFactory;
     private MatchMachine _matchMachine;
+    private CellMover _cellMover;
+    private readonly List<Cell> _updatingCells;
 
     public ArrayLayout BoartLayout;
 
@@ -20,13 +22,36 @@ public class BoardService : MonoBehaviour
     {
         _cellFactory = GetComponent<CellFactory>();
         _matchMachine = new MatchMachine(this);
+        _cellMover = new CellMover(this);
     }
 
     private void Start()
     {
         InitializeBoard();
         VerifyBoardOnMatches();
-        _cellFactory.InstantiateBoard(this, new CellMover());
+        _cellFactory.InstantiateBoard(this, _cellMover);
+    }
+
+    private void Update()
+    {
+        List<Cell> finishedUpdating = new List<Cell>();
+        _cellMover.Update();
+        foreach (Cell cell in _updatingCells)
+        {
+            if(!cell.UpdateCell())
+                finishedUpdating.Add(cell);
+        }
+
+        foreach (Cell cell in finishedUpdating)
+        {
+            _updatingCells.Remove(cell);
+        }
+    }
+
+    public void ResetCell(Cell cell)
+    {
+        cell.ResetPosition();
+        _updatingCells.Add(cell);
     }
 
     private void VerifyBoardOnMatches()
@@ -101,7 +126,7 @@ public class BoardService : MonoBehaviour
 
     public CellData GetCellAtPoint(Point point) => _boards[point.X, point.Y];
 
-    public Vector2 GetBoardPositionFromPoint(Point point)
+    public static Vector2 GetBoardPositionFromPoint(Point point)
     {
         return new Vector2(Config.PieceSize / 2 + Config.PieceSize * point.X, -Config.PieceSize / 2 - Config.PieceSize * point.Y);
     }

@@ -89,4 +89,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _image: {fileID: 3736511263337820082}
+  _moveSpeed: 10
   Rect: {fileID: 6024724756310491235}
