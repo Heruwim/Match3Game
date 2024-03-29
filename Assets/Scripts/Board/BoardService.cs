@@ -26,7 +26,7 @@ public class BoardService : MonoBehaviour
     {
         InitializeBoard();
         VerifyBoardOnMatches();
-        _cellFactory.InstantiateBoard(this);
+        _cellFactory.InstantiateBoard(this, new CellMover());
     }
 
     private void VerifyBoardOnMatches()

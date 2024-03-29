@@ -8,7 +8,7 @@ public class CellFactory : MonoBehaviour
 
     private BoardService _boardService;
 
-    public void InstantiateBoard(BoardService boardService)
+    public void InstantiateBoard(BoardService boardService, CellMover cellMover)
     {
         for (int y = 0; y < Config.BoardHeight; y++)
         {
@@ -24,7 +24,7 @@ public class CellFactory : MonoBehaviour
 
                 Cell cell = InstantiateCell();
                 cell.Rect.anchoredPosition = boardService.GetBoardPositionFromPoint(point);
-                cell.Initialize(cellData, boardService.CellSprites[(int)(cellType - 1)]);
+                cell.Initialize(cellData, boardService.CellSprites[(int)(cellType - 1)], cellMover);
 
             }
         }
