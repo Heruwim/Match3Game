@@ -115,7 +115,7 @@ public class MatchMachine
         }
     }
 
-    private static void AddPoints(ref List<Point> points, List<Point> addPoints)
+    public static void AddPoints(ref List<Point> points, List<Point> addPoints)
     {
         foreach (Point addPoint in addPoints)
         {

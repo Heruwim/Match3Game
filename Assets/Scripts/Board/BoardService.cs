@@ -46,6 +46,35 @@ public class BoardService : MonoBehaviour
         foreach (Cell cell in finishedUpdating)
         {
             var flip = GetFlip(cell);
+            var connectedPoints = _matchMachine.GetMatchedPoints(cell.Point, true);
+            Cell flippedCell = null;
+
+            if(flip != null)
+            {
+                flippedCell = flip.GetOtherCell(cell);
+                MatchMachine.AddPoints(ref connectedPoints, _matchMachine.GetMatchedPoints(flippedCell.Point, true));
+            }
+
+            if (connectedPoints.Count == 0)
+            {
+                if (flippedCell != null)
+                    FlipCells(cell.Point, flippedCell.Point, false);
+            }
+            else
+            {
+                Debug.Log("Match");
+                foreach (var connectedPoint in connectedPoints)
+                {
+                    var cellAtPoint = GetCellAtPoint(connectedPoint);
+                    var connectedCell = cellAtPoint.GetCell();
+                    if(connectedCell != null)
+                    {
+                        connectedCell.gameObject.SetActive(false);
+                    }
+                    cellAtPoint.SetCell(null);
+                }
+            }
+
             _flippedCells.Remove(flip);
             _updatingCells.Remove(cell);
         }
