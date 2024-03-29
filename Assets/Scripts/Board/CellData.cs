@@ -1,3 +1,5 @@
+using System;
+
 public class CellData
 {
     public enum CellType
@@ -22,5 +24,21 @@ public class CellData
     {
         NewCellType = cellType;
         NewPoint = point;
+    }
+
+    public Cell GetCell() => _cell;
+
+    public void SetCell(Cell newCell)
+    {
+        _cell = newCell;
+        if(_cell == null)
+        {
+            NewCellType  = CellType.Blank;
+        }
+        else
+        {
+            NewCellType= newCell.CellType;
+            _cell.SetCellPoint(NewPoint);
+        }
     }
 }

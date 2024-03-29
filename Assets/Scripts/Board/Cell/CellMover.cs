@@ -31,11 +31,11 @@ public class CellMover
         {
             if(absoluteDirection.x > absoluteDirection.y)
             {
-                addPoint = new Point(mousePosition.x > 0 ? 1 : -1, 0);
+                addPoint = new Point(mouseDirection.x > 0 ? 1 : -1, 0);
             }
             else
             {
-                addPoint = new Point(0, mousePosition.y > 0 ? 1 : -1);
+                addPoint = new Point(0, mouseDirection.y > 0 ? -1 : 1);
             }
         }
 
@@ -44,7 +44,7 @@ public class CellMover
         var newPointPosotion = BoardService.GetBoardPositionFromPoint(_movingCell.Point);
         if (!_newPoint.Equals(_movingCell.Point))
         {
-            newPointPosotion += Point.Multiply(addPoint, Config.PieceSize / 2).ToVector();
+            newPointPosotion += Point.Multiply(new Point(addPoint.X, -addPoint.Y), Config.PieceSize / 2).ToVector();
         }
         _movingCell.MoveToPosition(newPointPosotion);
     }
@@ -65,7 +65,16 @@ public class CellMover
         {
             return;
         }
-        _boardService.ResetCell(_movingCell);
+
+        if (_newPoint.Equals(_movingCell.Point))
+        {
+            _boardService.ResetCell(_movingCell);
+        }
+        else
+        {
+            _boardService.FlipCells(_movingCell.Point, _newPoint, true);
+        }
+
         _movingCell = null;
     }
 }

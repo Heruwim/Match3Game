@@ -24,8 +24,6 @@ public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         _cellData = cellData;
         _image.sprite = sprite;
         _cellMover = cellMover;
-        UpdateName();
-        ResetPosition();
     }
 
     public bool UpdateCell()
@@ -55,4 +53,11 @@ public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         => Rect.anchoredPosition = Vector2.Lerp(Rect.anchoredPosition, newPointPosotion, _moveSpeed * Time.deltaTime);
 
     public void ResetPosition() => _position = BoardService.GetBoardPositionFromPoint(Point);
+
+    public void SetCellPoint(Point point)
+    {
+        _cellData.NewPoint = point;
+        UpdateName();
+        ResetPosition();
+    }
 }

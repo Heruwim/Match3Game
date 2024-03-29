@@ -12,7 +12,8 @@ public class BoardService : MonoBehaviour
     private CellFactory _cellFactory;
     private MatchMachine _matchMachine;
     private CellMover _cellMover;
-    private readonly List<Cell> _updatingCells;
+    private readonly List<Cell> _updatingCells = new List<Cell>();
+    private readonly List<CellFlip> _flippedCells = new List<CellFlip>();
 
     public ArrayLayout BoartLayout;
 
@@ -38,14 +39,58 @@ public class BoardService : MonoBehaviour
         _cellMover.Update();
         foreach (Cell cell in _updatingCells)
         {
-            if(!cell.UpdateCell())
+            if (!cell.UpdateCell())
                 finishedUpdating.Add(cell);
         }
 
         foreach (Cell cell in finishedUpdating)
         {
+            var flip = GetFlip(cell);
+            _flippedCells.Remove(flip);
             _updatingCells.Remove(cell);
         }
+    }
+
+    public void FlipCells(Point firstPoint, Point secondPoint, bool main)
+    {
+        if(GetCellTypeAtPoint(firstPoint) < 0)
+        {
+            return;
+        }
+
+        var firstCellData = GetCellAtPoint(firstPoint);
+        var firstCell = firstCellData.GetCell();
+        if(GetCellTypeAtPoint(secondPoint) > 0)
+        {
+            var secondCellData = GetCellAtPoint(secondPoint);
+            var secondCell = secondCellData.GetCell();
+            firstCellData.SetCell(secondCell);
+            secondCellData.SetCell(firstCell);
+
+            if (main)
+            {
+                _flippedCells.Add(new CellFlip(firstCell, secondCell));
+            }
+
+            _updatingCells.Add(firstCell);
+            _updatingCells.Add(secondCell);
+        }
+        else
+        {
+            ResetCell(firstCell);
+        }
+    }
+
+    private CellFlip GetFlip(Cell cell)
+    {
+        foreach (CellFlip flip in _flippedCells)
+        {
+            if (flip.GetOtherCell(cell) != null)
+            {
+                return flip;
+            }
+        }
+        return null;
     }
 
     public void ResetCell(Cell cell)
@@ -62,7 +107,7 @@ public class BoardService : MonoBehaviour
             {
                 var point = new Point(x, y);
                 var cellTypeAtPoint = GetCellTypeAtPoint(point);
-                if(cellTypeAtPoint <= 0)
+                if (cellTypeAtPoint <= 0)
                 {
                     continue;
                 }
@@ -70,12 +115,12 @@ public class BoardService : MonoBehaviour
                 var removeCellTypes = new List<CellData.CellType>();
                 while (_matchMachine.GetMatchedPoints(point, true).Count > 0)
                 {
-                    if(removeCellTypes.Contains(cellTypeAtPoint) == false)
+                    if (removeCellTypes.Contains(cellTypeAtPoint) == false)
                     {
                         removeCellTypes.Add(cellTypeAtPoint);
                     }
-                    SetCellTypeAtPoint(point, GetNewCellType(ref removeCellTypes));                    
-                } 
+                    SetCellTypeAtPoint(point, GetNewCellType(ref removeCellTypes));
+                }
             }
         }
     }
@@ -103,7 +148,7 @@ public class BoardService : MonoBehaviour
 
     public CellData.CellType GetCellTypeAtPoint(Point point)
     {
-        if(point.X < 0 || point.X >= Config.BoardWidth || point.Y < 0 || point.Y >= Config.BoardHeight)
+        if (point.X < 0 || point.X >= Config.BoardWidth || point.Y < 0 || point.Y >= Config.BoardHeight)
         {
             return CellData.CellType.Hole;
         }
