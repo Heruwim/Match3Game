@@ -14,6 +14,7 @@ public class BoardService : MonoBehaviour
     private CellMover _cellMover;
     private readonly List<Cell> _updatingCells = new List<Cell>();
     private readonly List<CellFlip> _flippedCells = new List<CellFlip>();
+    private readonly int[] _fillingCellsCountByColumn = new int[Config.BoardWidth];
 
     public ArrayLayout BoartLayout;
 
@@ -45,8 +46,11 @@ public class BoardService : MonoBehaviour
 
         foreach (Cell cell in finishedUpdating)
         {
-            var flip = GetFlip(cell);
-            var connectedPoints = _matchMachine.GetMatchedPoints(cell.Point, true);
+            int x = cell.Point.X;
+            _fillingCellsCountByColumn[x] = Mathf.Clamp(_fillingCellsCountByColumn[x] - 1, 0, Config.BoardWidth);
+
+            CellFlip flip = GetFlip(cell);
+            List<Point> connectedPoints = _matchMachine.GetMatchedPoints(cell.Point, true);
             Cell flippedCell = null;
 
             if(flip != null)
@@ -113,6 +117,20 @@ public class BoardService : MonoBehaviour
                         cellData.SetCell(cell);
                         _updatingCells.Add(cell);
                         cellAtPoint.SetCell(null);
+                    }
+                    else
+                    {
+                        CellData.CellType cellType = GetRandomCellType();
+                        Point fallPoint = new Point(x, -1 - _fillingCellsCountByColumn[x]);
+                        Cell cell = _cellFactory.InstantiateCell();
+
+                        cell.Initialize(new CellData(cellType, point), _cellSprites[(int)(cellType - 1)], _cellMover);
+                        cell.Rect.anchoredPosition = GetBoardPositionFromPoint(fallPoint);
+
+                        CellData holeCell = GetCellAtPoint(point);
+                        holeCell.SetCell(cell);
+                        ResetCell(cell);
+                        _fillingCellsCountByColumn[x]++;
                     }
                     break;
                 }

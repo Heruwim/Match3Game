@@ -35,5 +35,5 @@ public class CellFactory : MonoBehaviour
         }
     }    
 
-    private Cell InstantiateCell() => Instantiate(_cellPrefab, _BoardRect);
+    public Cell InstantiateCell() => Instantiate(_cellPrefab, _BoardRect);
 }
