@@ -73,10 +73,51 @@ public class BoardService : MonoBehaviour
                     }
                     cellAtPoint.SetCell(null);
                 }
+
+                ApplyGravityToBoard();
             }
 
             _flippedCells.Remove(flip);
             _updatingCells.Remove(cell);
+        }
+    }
+
+    private void ApplyGravityToBoard()
+    {
+        for (int x = 0; x < Config.BoardWidth; x++)
+        {
+            for (int y = Config.BoardHeight - 1; y >= 0; y--)
+            {
+                Point point = new Point(x, y);
+                CellData cellData = GetCellAtPoint(point);
+                CellData.CellType cellTypeAtPoint = GetCellTypeAtPoint(point);
+
+                if(cellTypeAtPoint != 0)
+                {
+                    continue;
+                }
+
+                for (int newY = y - 1; newY >= -1; newY--)
+                {
+                    Point nextPoint = new Point(x, newY);
+                    CellData.CellType nextCellType = GetCellTypeAtPoint(nextPoint);
+                    if(nextCellType == 0)
+                    {
+                        continue;
+                    }
+
+                    if (nextCellType != CellData.CellType.Hole)
+                    {
+                        CellData cellAtPoint = GetCellAtPoint(nextPoint);
+                        Cell cell = cellAtPoint.GetCell();
+                        cellData.SetCell(cell);
+                        _updatingCells.Add(cell);
+                        cellAtPoint.SetCell(null);
+                    }
+                    break;
+                }
+
+            }
         }
     }
 

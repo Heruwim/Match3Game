@@ -31,13 +31,13 @@ public class CellData
     public void SetCell(Cell newCell)
     {
         _cell = newCell;
-        if(_cell == null)
+        if (_cell == null)
         {
-            NewCellType  = CellType.Blank;
+            NewCellType = CellType.Blank;
         }
         else
         {
-            NewCellType= newCell.CellType;
+            NewCellType = newCell.CellType;
             _cell.SetCellPoint(NewPoint);
         }
     }
