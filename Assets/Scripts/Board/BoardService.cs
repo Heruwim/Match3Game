@@ -13,6 +13,7 @@ public class BoardService : MonoBehaviour
     private MatchMachine _matchMachine;
     private CellMover _cellMover;
     private readonly List<Cell> _updatingCells = new List<Cell>();
+    private readonly List<Cell> _deadCells = new List<Cell>();
     private readonly List<CellFlip> _flippedCells = new List<CellFlip>();
     private readonly int[] _fillingCellsCountByColumn = new int[Config.BoardWidth];
 
@@ -74,6 +75,7 @@ public class BoardService : MonoBehaviour
                     if(connectedCell != null)
                     {
                         connectedCell.gameObject.SetActive(false);
+                        _deadCells.Add(connectedCell);
                     }
                     cellAtPoint.SetCell(null);
                 }
@@ -122,7 +124,18 @@ public class BoardService : MonoBehaviour
                     {
                         CellData.CellType cellType = GetRandomCellType();
                         Point fallPoint = new Point(x, -1 - _fillingCellsCountByColumn[x]);
-                        Cell cell = _cellFactory.InstantiateCell();
+                        Cell cell;
+                        if(_deadCells.Count > 0)
+                        {
+                            var revivedCell = _deadCells[0];
+                            revivedCell.gameObject.SetActive(true);
+                            cell = revivedCell;
+                            _deadCells.RemoveAt(0);
+                        }
+                        else
+                        {
+                            cell = _cellFactory.InstantiateCell();
+                        }
 
                         cell.Initialize(new CellData(cellType, point), _cellSprites[(int)(cellType - 1)], _cellMover);
                         cell.Rect.anchoredPosition = GetBoardPositionFromPoint(fallPoint);
