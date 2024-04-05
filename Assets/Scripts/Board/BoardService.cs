@@ -7,6 +7,8 @@ using Random = UnityEngine.Random;
 public class BoardService : MonoBehaviour
 {
     [SerializeField] private Sprite[] _cellSprites;
+    [SerializeField] private ParticleSystem _matchFxPrefab;
+    [SerializeField] private ScoreService _scoreService;
 
     private CellData[,] _boards;
     private CellFactory _cellFactory;
@@ -16,6 +18,7 @@ public class BoardService : MonoBehaviour
     private readonly List<Cell> _deadCells = new();
     private readonly List<CellFlip> _flippedCells = new();
     private readonly int[] _fillingCellsCountByColumn = new int[Config.BoardWidth];
+    private readonly List<ParticleSystem> _matchFxs = new List<ParticleSystem>();
 
     public ArrayLayout BoartLayout;
 
@@ -54,7 +57,7 @@ public class BoardService : MonoBehaviour
             List<Point> connectedPoints = _matchMachine.GetMatchedPoints(cell.Point, true);
             Cell flippedCell = null;
 
-            if(flip != null)
+            if (flip != null)
             {
                 flippedCell = flip.GetOtherCell(cell);
                 MatchMachine.AddPoints(ref connectedPoints, _matchMachine.GetMatchedPoints(flippedCell.Point, true));
@@ -67,18 +70,34 @@ public class BoardService : MonoBehaviour
             }
             else
             {
+                ParticleSystem matchFx;
+                if (_matchFxs.Count > 0 && _matchFxs[0].isStopped)
+                {
+                    matchFx = _matchFxs[0];
+                    _matchFxs.RemoveAt(0);
+                }
+                else
+                {
+                    matchFx = Instantiate(_matchFxPrefab, transform);
+                }
+                _matchFxs.Add(matchFx);
+                matchFx.Play();
+                matchFx.transform.position = cell.Rect.transform.position;
+
                 foreach (var connectedPoint in connectedPoints)
                 {
                     _cellFactory.KillCell(connectedPoint);
                     var cellAtPoint = GetCellAtPoint(connectedPoint);
                     var connectedCell = cellAtPoint.GetCell();
-                    if(connectedCell != null)
+                    if (connectedCell != null)
                     {
                         connectedCell.gameObject.SetActive(false);
                         _deadCells.Add(connectedCell);
                     }
                     cellAtPoint.SetCell(null);
                 }
+
+                _scoreService.AddScore(connectedPoints.Count);
 
                 ApplyGravityToBoard();
             }
@@ -98,7 +117,7 @@ public class BoardService : MonoBehaviour
                 CellData cellData = GetCellAtPoint(point);
                 CellData.CellType cellTypeAtPoint = GetCellTypeAtPoint(point);
 
-                if(cellTypeAtPoint != 0)
+                if (cellTypeAtPoint != 0)
                 {
                     continue;
                 }
@@ -107,7 +126,7 @@ public class BoardService : MonoBehaviour
                 {
                     Point nextPoint = new(x, newY);
                     CellData.CellType nextCellType = GetCellTypeAtPoint(nextPoint);
-                    if(nextCellType == 0)
+                    if (nextCellType == 0)
                     {
                         continue;
                     }
@@ -125,7 +144,7 @@ public class BoardService : MonoBehaviour
                         CellData.CellType cellType = GetRandomCellType();
                         Point fallPoint = new(x, -1 - _fillingCellsCountByColumn[x]);
                         Cell cell;
-                        if(_deadCells.Count > 0)
+                        if (_deadCells.Count > 0)
                         {
                             var revivedCell = _deadCells[0];
                             revivedCell.gameObject.SetActive(true);
@@ -154,14 +173,14 @@ public class BoardService : MonoBehaviour
 
     public void FlipCells(Point firstPoint, Point secondPoint, bool main)
     {
-        if(GetCellTypeAtPoint(firstPoint) < 0)
+        if (GetCellTypeAtPoint(firstPoint) < 0)
         {
             return;
         }
 
         var firstCellData = GetCellAtPoint(firstPoint);
         var firstCell = firstCellData.GetCell();
-        if(GetCellTypeAtPoint(secondPoint) > 0)
+        if (GetCellTypeAtPoint(secondPoint) > 0)
         {
             var secondCellData = GetCellAtPoint(secondPoint);
             var secondCell = secondCellData.GetCell();
