@@ -26,7 +26,7 @@ public class Point
 
     public bool Equals(Point point) => X == point.X && Y == point.Y;
     
-    public Vector2 ToVector() => new Vector2(X, Y);
+    public Vector2 ToVector() => new(X, Y);
 
     public static Point FromVector(Vector2 vector) => new ((int)vector.x, (int)vector.y);
 
@@ -38,13 +38,13 @@ public class Point
 
     public static Point Clone(Point point) => new (point.X, point.Y);
 
-    public static Point Zero => new Point(0, 0);
+    public static Point Zero => new(0, 0);
 
-    public static Point Up => new Point(0, 1);
+    public static Point Up => new(0, 1);
 
-    public static Point Down => new Point(0, -1);
+    public static Point Down => new(0, -1);
 
-    public static Point Left => new Point(-1, 0);
+    public static Point Left => new(-1, 0);
 
-    public static Point Right => new Point(1, 0);
+    public static Point Right => new(1, 0);
 }

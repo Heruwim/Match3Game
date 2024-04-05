@@ -322,7 +322,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BoardRect: {fileID: 482613115}
+  _killedBoardRect: {fileID: 0}
   _cellPrefab: {fileID: 5157308472385302768, guid: a97d116ad7441094d8e2db0a57f80f2f, type: 3}
+  _killedCellPrefab: {fileID: 5927173586279302726, guid: 19ec8db41cf90ea43b3a1ba84d670c96, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

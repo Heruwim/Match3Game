@@ -12,9 +12,9 @@ public class BoardService : MonoBehaviour
     private CellFactory _cellFactory;
     private MatchMachine _matchMachine;
     private CellMover _cellMover;
-    private readonly List<Cell> _updatingCells = new List<Cell>();
-    private readonly List<Cell> _deadCells = new List<Cell>();
-    private readonly List<CellFlip> _flippedCells = new List<CellFlip>();
+    private readonly List<Cell> _updatingCells = new();
+    private readonly List<Cell> _deadCells = new();
+    private readonly List<CellFlip> _flippedCells = new();
     private readonly int[] _fillingCellsCountByColumn = new int[Config.BoardWidth];
 
     public ArrayLayout BoartLayout;
@@ -37,7 +37,7 @@ public class BoardService : MonoBehaviour
 
     private void Update()
     {
-        List<Cell> finishedUpdating = new List<Cell>();
+        List<Cell> finishedUpdating = new();
         _cellMover.Update();
         foreach (Cell cell in _updatingCells)
         {
@@ -67,9 +67,9 @@ public class BoardService : MonoBehaviour
             }
             else
             {
-                Debug.Log("Match");
                 foreach (var connectedPoint in connectedPoints)
                 {
+                    _cellFactory.KillCell(connectedPoint);
                     var cellAtPoint = GetCellAtPoint(connectedPoint);
                     var connectedCell = cellAtPoint.GetCell();
                     if(connectedCell != null)
@@ -94,7 +94,7 @@ public class BoardService : MonoBehaviour
         {
             for (int y = Config.BoardHeight - 1; y >= 0; y--)
             {
-                Point point = new Point(x, y);
+                Point point = new(x, y);
                 CellData cellData = GetCellAtPoint(point);
                 CellData.CellType cellTypeAtPoint = GetCellTypeAtPoint(point);
 
@@ -105,7 +105,7 @@ public class BoardService : MonoBehaviour
 
                 for (int newY = y - 1; newY >= -1; newY--)
                 {
-                    Point nextPoint = new Point(x, newY);
+                    Point nextPoint = new(x, newY);
                     CellData.CellType nextCellType = GetCellTypeAtPoint(nextPoint);
                     if(nextCellType == 0)
                     {
@@ -123,7 +123,7 @@ public class BoardService : MonoBehaviour
                     else
                     {
                         CellData.CellType cellType = GetRandomCellType();
-                        Point fallPoint = new Point(x, -1 - _fillingCellsCountByColumn[x]);
+                        Point fallPoint = new(x, -1 - _fillingCellsCountByColumn[x]);
                         Cell cell;
                         if(_deadCells.Count > 0)
                         {

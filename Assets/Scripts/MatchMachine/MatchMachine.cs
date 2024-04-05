@@ -39,7 +39,7 @@ public class MatchMachine
     {
         for (int i = 0; i < 4; i++)
         {
-            List<Point> square = new List<Point>();
+            List<Point> square = new();
 
             int nextCellIndex = i + 1;
             nextCellIndex = nextCellIndex > 3 ? 0 : nextCellIndex;
@@ -70,7 +70,7 @@ public class MatchMachine
     {
         for (int i = 0; i < 2; i++)
         {
-            List<Point> line = new List<Point>();
+            List<Point> line = new();
 
             Point[] checkPoints =
             {
@@ -97,7 +97,7 @@ public class MatchMachine
     {
         foreach (Point direction in _directions)
         {
-            List<Point> line = new List<Point>();
+            List<Point> line = new();
 
             for (int i = 1; i < 3; i++)
             {

@@ -22,7 +22,7 @@ public class CellMover
 
         Vector2 mousePosition = (Vector2) Input.mousePosition - _mouseStartPosition;
         Vector2 mouseDirection = mousePosition.normalized;
-        Vector2 absoluteDirection = new Vector2(Mathf.Abs(mousePosition.x), Mathf.Abs(mousePosition.y));
+        Vector2 absoluteDirection = new(Mathf.Abs(mousePosition.x), Mathf.Abs(mousePosition.y));
 
         _newPoint = Point.Clone(_movingCell.Point);
         var addPoint = Point.Zero;
